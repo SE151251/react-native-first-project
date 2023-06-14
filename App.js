@@ -1,34 +1,55 @@
-import 'react-native-gesture-handler';
-import * as React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import * as React from 'react';
+import 'react-native-gesture-handler';
+import FavouriteList from './components/FavouriteList';
+import FlatListItems from './components/FlatListItem';
+import { Provider } from 'react-redux';
+import store from './redux/store';
 const Stack = createNativeStackNavigator();
-import LittleLemonHeader from './components/LittleLemonHeader';
-import LittleLemonFooter from './components/LittleLemonFooter';
-import MenuItems from './components/MenuItems';
-import WelcomeScreen from './components/WelcomeScreen';
-import LoginScreen from './components/LoginSrceen';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'; 
-//import { NavigationContainer } from '@react-navigation/native';
-//import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Ionicons } from '@expo/vector-icons'; 
+
 import { createDrawerNavigator } from '@react-navigation/drawer';
-const Drawer = createDrawerNavigator ();
-export default function App() {
-  return (
-  <NavigationContainer>
-  <Drawer.Navigator
-  useLegacyImplementation
-  screenOptions={{ drawerPosition: "right" }}>
-  <Drawer.Screen name="Welcome" component={WelcomeScreen} />
-  <Drawer.Screen name="Menu" component={MenuItems} />
-  </Drawer.Navigator>
-  </NavigationContainer>
-  );
- }
+// const Drawer = createDrawerNavigator ();
+// export default function App() {
+//   return (
+//   <NavigationContainer>
+//   <Drawer.Navigator
+//   useLegacyImplementation
+//   screenOptions={{ drawerPosition: "right" }}>
+//   <Drawer.Screen name="Welcome" component={WelcomeScreen} />
+//   <Drawer.Screen name="Menu" component={FlatListItems} />
+//   </Drawer.Navigator>
+//   </NavigationContainer>
+//   );
+//  }
 
-
+ const Drawer = createDrawerNavigator();
+ const Tab = createBottomTabNavigator();
+ 
+ const App = () => {
+   return (
+    <Provider store={store}>
+     <NavigationContainer>
+       <Drawer.Navigator initialRouteName="Home">
+         <Drawer.Screen name="Home" component={TabNavigator} />
+         <Drawer.Screen name="Favourite List" component={FavouriteList} />
+       </Drawer.Navigator>
+     </NavigationContainer>
+     </Provider>
+   );
+ };
+ 
+ const TabNavigator = () => {
+   return (
+     <Tab.Navigator>
+       <Tab.Screen name="Home 2" component={FlatListItems} />
+       <Tab.Screen name="Like" component={FavouriteList} />
+     </Tab.Navigator>
+   );
+ };
+ 
+ export default App;
 // const Tab = createBottomTabNavigator()
 // export default function App() {
 //   return (
