@@ -6,7 +6,7 @@ import {
   StyleSheet,
   FlatList,
   Image,
-  Button,
+  Pressable,
   TouchableOpacity,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
@@ -85,7 +85,7 @@ const menuItemsToDisplay = [
 ];
 // let dataFavourite = []
 
-const FlatListItems = () => {
+const FlatListItems = ({navigation}) => {
   const dispatch = useDispatch()
   const dataFetch = useSelector((state) => state.data)
   console.log("fetch data: ",dataFetch);
@@ -110,6 +110,7 @@ const FlatListItems = () => {
       image={item.image}
       id={item.id}
       data={dataFetch}
+      navigation={navigation}
     />
   );
   return dataFetch ? (
@@ -124,7 +125,7 @@ const FlatListItems = () => {
     <Text>Loading</Text>
   );
 };
-const Item = ({ name, price, image, id, data }) => {
+const Item = ({ name, price, image, id, navigation }) => {
   const dispatch = useDispatch()
   const dataFetch = useSelector((state) => state.data)
   const [isLike, setIsLike] = useState(dataFetch.find((i) => i.id === id) ? true : false );
@@ -161,9 +162,17 @@ const Item = ({ name, price, image, id, data }) => {
 
   return (
     <View style={menuStyles.innerContainer}>
+      <Pressable onPress={()=>{navigation.navigate("Detail", {
+      id: id,
+      name: name,
+      image: image,
+      price: price,
+      like: isLike,
+    })}}>
       <Image source={{ uri: image }} style={{ width: 100, height: 100 }} />
       <Text style={menuStyles.itemText}>{name}</Text>
       <Text style={menuStyles.itemText}>{price}</Text>
+      </Pressable>
       <TouchableOpacity onPress={() => handleFavourite(id)}>
         <View style={{ flexDirection: "row", alignItems: "center" }}>
           {isLike ? (

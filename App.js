@@ -10,6 +10,7 @@ import store from './redux/store';
 const Stack = createNativeStackNavigator();
 
 import { createDrawerNavigator } from '@react-navigation/drawer';
+import DetailScreen from './components/DetailScreen';
 // const Drawer = createDrawerNavigator ();
 // export default function App() {
 //   return (
@@ -31,23 +32,34 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
    return (
     <Provider store={store}>
      <NavigationContainer>
-       <Drawer.Navigator initialRouteName="Home">
+     <Tab.Navigator>
+        <Tab.Screen name="Home" component={MainStack} />
+        <Tab.Screen name="Like" component={FavouriteList} />
+      </Tab.Navigator>
+       {/* <Drawer.Navigator initialRouteName="Home">
          <Drawer.Screen name="Home" component={TabNavigator} />
          <Drawer.Screen name="Favourite List" component={FavouriteList} />
-       </Drawer.Navigator>
+       </Drawer.Navigator> */}
      </NavigationContainer>
      </Provider>
    );
  };
- 
- const TabNavigator = () => {
-   return (
-     <Tab.Navigator>
-       <Tab.Screen name="Home 2" component={FlatListItems} />
-       <Tab.Screen name="Like" component={FavouriteList} />
-     </Tab.Navigator>
-   );
- };
+ const MainStack = () => {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="ListItem" component={FlatListItems} />
+      <Stack.Screen name="Detail" component={DetailScreen} />
+    </Stack.Navigator>
+  );
+};
+//  const TabNavigator = () => {
+//    return (
+//      <Tab.Navigator>
+//        <Tab.Screen name="Home 2" component={FlatListItems} />
+//        <Tab.Screen name="Like" component={FavouriteList} />
+//      </Tab.Navigator>
+//    );
+//  };
  
  export default App;
 // const Tab = createBottomTabNavigator()
