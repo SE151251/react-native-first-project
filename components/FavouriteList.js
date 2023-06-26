@@ -7,20 +7,18 @@ import {
   Image,
   TouchableOpacity,
   Button,
+  Alert
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useDispatch, useSelector } from 'react-redux';
-const Item = ({ name, price, image, id, data }) => {
-  const dispatch = useDispatch()
+import { useIsFocused } from "@react-navigation/native";
+const Item = ({ name, price, image, id, data, setDataFetch }) => {
   const removeItem = async (id) => {
     try {
       const newList = data.filter((i) => i.id !== id);
-      await AsyncStorage.clear();
       const jsonValue = JSON.stringify(newList);
       await AsyncStorage.setItem("myObject", jsonValue);
-      dispatch({type: "REMOVE_DATA", payload: newList})
-      console.log("Data remove successfully.");
+      setDataFetch(newList)
     } catch (error) {
       console.log("Error remove data:", error);
     }
@@ -40,16 +38,31 @@ const Item = ({ name, price, image, id, data }) => {
 };
 
 const FavouriteList = () => {
-  const dispatch = useDispatch()
-  const dataFetch = useSelector((state) => state.data)
-  console.log("zo favo: ", dataFetch);
+  const [dataFetch,setDataFetch] = useState([])
+  const isFocused = useIsFocused();
   useEffect(() => {
-    loadData();
-  }, []);
+    if (isFocused) {
+      // Thực hiện các tác vụ khi màn hình được tập trung    
+      loadData();
+      console.log("Favourite screen is focused => load data in Favorite screen");
+    } else {
+      console.log('Favourite screen is not focused');
+    }
+  }, [isFocused]);
+  const handleDelete = () => {
+    Alert.alert(
+      'Xác nhận',
+      'Bạn có chắc chắn muốn xóa?',
+      [
+        { text: 'Hủy', style: 'cancel' },
+        { text: 'Xóa', onPress: clearData, style: 'destructive' }
+      ]
+    );
+  };
   const clearData = async () => {
     try {
       await AsyncStorage.clear();
-      dispatch({type: "REMOVE_ALL_DATA"})
+      setDataFetch()
     } catch (error) {
       console.log("Error clearing data:", error);
     }
@@ -57,8 +70,8 @@ const FavouriteList = () => {
   const loadData = async () => {
     try {
       const jsonValue = await AsyncStorage.getItem("myObject");
-      const obj = jsonValue != null ? JSON.parse(jsonValue) : [];
-      dispatch({type: "SET_DATA", payload: obj})
+      const obj = jsonValue != null ? JSON.parse(jsonValue) : null;
+      setDataFetch(obj)
     } catch (error) {
       console.log("Error loading data:", error);
     }
@@ -70,12 +83,14 @@ const FavouriteList = () => {
       image={item.image}
       id={item.id}
       data={dataFetch}
+      setDataFetch={setDataFetch}
     />
   );
+  console.log(dataFetch);
   if (dataFetch) {
     return (
       <View style={menuStyles.container}>
-        <Button onPress={clearData} title="Clear"></Button>
+        <Button onPress={handleDelete} title="Clear"></Button>
         <FlatList
           data={dataFetch}
           keyExtractor={(item) => item.id}

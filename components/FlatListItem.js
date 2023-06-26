@@ -10,7 +10,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useDispatch, useSelector } from 'react-redux';
+import { useIsFocused } from "@react-navigation/native";
 const menuItemsToDisplay = [
   {
     name: "Hummus",
@@ -85,32 +85,39 @@ const menuItemsToDisplay = [
 ];
 // let dataFavourite = []
 
-const FlatListItems = ({navigation}) => {
-  const dispatch = useDispatch()
-  const dataFetch = useSelector((state) => state.data)
-  console.log("fetch data: ",dataFetch);
+const FlatListItems = ({ navigation }) => {
+  const [dataFetch, setDataFetch] = useState();
   const loadData = async () => {
     try {
       const jsonValue = await AsyncStorage.getItem("myObject");
-      const parsedValue = jsonValue != null ? JSON.parse(jsonValue) : [];    
-      dispatch({type: "SET_DATA", payload: parsedValue})  
+      const parsedValue = jsonValue != null ? JSON.parse(jsonValue) : [];
+      setDataFetch(parsedValue);
     } catch (error) {
       console.log("Error loading data:", error);
-      dispatch({type: "SET_DATA", payload: []})
+      setDataFetch();
     }
   };
+  const isFocused = useIsFocused();
+
   useEffect(() => {
-    loadData();
-    console.log("load data");
-  }, []);
+    if (isFocused) {
+      // Thực hiện các tác vụ khi màn hình được tập trung
+      loadData();
+      console.log("Flatlist screen is focused => Load data in FlatList screen");
+    } else {
+      // Thực hiện các tác vụ khi màn hình không được tập trung
+      console.log("FlatList screen is not focused");
+    }
+  }, [isFocused]);
   const renderItem = ({ item }) => (
     <Item
       name={item.name}
       price={item.price}
       image={item.image}
       id={item.id}
-      data={dataFetch}
+      dataFetch={dataFetch}
       navigation={navigation}
+      setDataFetch={setDataFetch}
     />
   );
   return dataFetch ? (
@@ -125,10 +132,18 @@ const FlatListItems = ({navigation}) => {
     <Text>Loading</Text>
   );
 };
-const Item = ({ name, price, image, id, navigation }) => {
-  const dispatch = useDispatch()
-  const dataFetch = useSelector((state) => state.data)
-  const [isLike, setIsLike] = useState(dataFetch.find((i) => i.id === id) ? true : false );
+const Item = ({
+  name,
+  price,
+  image,
+  id,
+  navigation,
+  dataFetch,
+  setDataFetch,
+}) => {
+  const [isLike, setIsLike] = useState(
+    dataFetch.find((i) => i.id === id) ? true : false
+  );
   useEffect(() => {
     setIsLike(dataFetch.find((i) => i.id === id) ? true : false);
   }, [dataFetch]);
@@ -138,20 +153,17 @@ const Item = ({ name, price, image, id, navigation }) => {
       if (check) {
         const newDataAfterRemove = dataFetch.filter((i) => i.id !== id);
         const jsonValue = JSON.stringify(newDataAfterRemove);
-        await AsyncStorage.clear();
         await AsyncStorage.setItem("myObject", jsonValue);
-        dispatch({type: "REMOVE_DATA", payload: newDataAfterRemove})  
+        setDataFetch(newDataAfterRemove);
         setIsLike(isLike ? false : true);
         console.log("Remove successful");
         return;
       }
       const obj = menuItemsToDisplay.find((i) => i.id === id);
       dataFetch.push(obj);
-      console.log("add: ",dataFetch);
       const jsonValue = JSON.stringify(dataFetch);
-      await AsyncStorage.clear();
       await AsyncStorage.setItem("myObject", jsonValue);
-      dispatch({type: "ADD_DATA", payload: [...dataFetch]})
+      setDataFetch(dataFetch);
       setIsLike(isLike ? false : true);
       console.log("Add successful");
     } catch (error) {
@@ -162,16 +174,21 @@ const Item = ({ name, price, image, id, navigation }) => {
 
   return (
     <View style={menuStyles.innerContainer}>
-      <Pressable onPress={()=>{navigation.navigate("Detail", {
-      id: id,
-      name: name,
-      image: image,
-      price: price,
-      like: isLike,
-    })}}>
-      <Image source={{ uri: image }} style={{ width: 100, height: 100 }} />
-      <Text style={menuStyles.itemText}>{name}</Text>
-      <Text style={menuStyles.itemText}>{price}</Text>
+      <Pressable
+        onPress={() => {
+          navigation.navigate("Detail", {
+            id: id,
+            name: name,
+            image: image,
+            price: price,
+            like: isLike,
+            dataFetch: dataFetch
+          });
+        }}
+      >
+        <Image source={{ uri: image }} style={{ width: 100, height: 100 }} />
+        <Text style={menuStyles.itemText}>{name}</Text>
+        <Text style={menuStyles.itemText}>{price}</Text>
       </Pressable>
       <TouchableOpacity onPress={() => handleFavourite(id)}>
         <View style={{ flexDirection: "row", alignItems: "center" }}>

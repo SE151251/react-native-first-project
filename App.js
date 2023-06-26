@@ -5,8 +5,6 @@ import * as React from 'react';
 import 'react-native-gesture-handler';
 import FavouriteList from './components/FavouriteList';
 import FlatListItems from './components/FlatListItem';
-import { Provider } from 'react-redux';
-import store from './redux/store';
 const Stack = createNativeStackNavigator();
 
 import { createDrawerNavigator } from '@react-navigation/drawer';
@@ -25,12 +23,11 @@ import DetailScreen from './components/DetailScreen';
 //   );
 //  }
 
- const Drawer = createDrawerNavigator();
+//  const Drawer = createDrawerNavigator();
  const Tab = createBottomTabNavigator();
  
  const App = () => {
    return (
-    <Provider store={store}>
      <NavigationContainer>
      <Tab.Navigator>
         <Tab.Screen name="Home" component={MainStack} />
@@ -41,7 +38,6 @@ import DetailScreen from './components/DetailScreen';
          <Drawer.Screen name="Favourite List" component={FavouriteList} />
        </Drawer.Navigator> */}
      </NavigationContainer>
-     </Provider>
    );
  };
  const MainStack = () => {
