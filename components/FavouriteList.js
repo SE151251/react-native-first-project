@@ -15,9 +15,13 @@ import { useIsFocused } from "@react-navigation/native";
 const Item = ({ name, price, image, id, data, setDataFetch, category, description, navigation}) => {
   const removeItem = async (id) => {
     try {
+      
+      
       const newList = data.filter((i) => i.id !== id);
       const jsonValue = JSON.stringify(newList);
       await AsyncStorage.setItem("myObject", jsonValue);
+      if(newList.length === 0) {
+        return setDataFetch()}       
       setDataFetch(newList)
     } catch (error) {
       console.log("Error remove data:", error);
@@ -61,7 +65,7 @@ const Item = ({ name, price, image, id, data, setDataFetch, category, descriptio
 };
 
 const FavouriteList = ({navigation}) => {
-  const [dataFetch,setDataFetch] = useState([])
+  const [dataFetch,setDataFetch] = useState()
   const isFocused = useIsFocused();
   useEffect(() => {
     if (isFocused) {
@@ -93,8 +97,8 @@ const FavouriteList = ({navigation}) => {
   const loadData = async () => {
     try {
       const jsonValue = await AsyncStorage.getItem("myObject");
-      const obj = jsonValue != null ? JSON.parse(jsonValue) : null;
-      setDataFetch(obj)
+      const obj = jsonValue != null ? JSON.parse(jsonValue) : [];
+      setDataFetch(obj.length === 0 ? null : obj)
     } catch (error) {
       console.log("Error loading data:", error);
     }
@@ -112,7 +116,6 @@ const FavouriteList = ({navigation}) => {
       setDataFetch={setDataFetch}
     />
   );
-  console.log(dataFetch);
   if (dataFetch) {
     return (
     <View style={menuStyles.container}>
