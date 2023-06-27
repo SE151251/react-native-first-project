@@ -54,7 +54,7 @@ const DetailScreen = () => {
         console.log("Remove successful");
         return;
       }    
-      dataFetch.push({id: id, name: name, price: price, image: image});
+      dataFetch.push({id: id, name: name, price: price, image: image, category: category, description: description});
       console.log("add: ",dataFetch);
       const jsonValue = JSON.stringify(dataFetch);
       await AsyncStorage.setItem("myObject", jsonValue);
@@ -65,7 +65,7 @@ const DetailScreen = () => {
       setIsLike(false);
     }
   };
-  console.log(name, price, isLike);
+  console.log("data in detail: ",category, description);
   return (
     // <View>     
     //   <Text>DetailScreen</Text>

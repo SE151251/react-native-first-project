@@ -6,12 +6,13 @@ import {
   Image,
   TouchableOpacity,
   Alert,
+  Pressable,
 } from "react-native";
 import { Button, Chip, Text } from 'react-native-paper';
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, AntDesign } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useIsFocused } from "@react-navigation/native";
-const Item = ({ name, price, image, id, data, setDataFetch, navigation}) => {
+const Item = ({ name, price, image, id, data, setDataFetch, category, description, navigation}) => {
   const removeItem = async (id) => {
     try {
       const newList = data.filter((i) => i.id !== id);
@@ -25,13 +26,30 @@ const Item = ({ name, price, image, id, data, setDataFetch, navigation}) => {
   return (
     <>
     <View style={menuStyles.innerContainer}>
-      <View style={{flexDirection:"row"}}>
+      <Pressable
+      style={menuStyles.item}
+        onPress={() => {
+          navigation.navigate("Detail", {
+            id: id,
+            name: name,
+            image: image,
+            price: price,
+            category: category,
+            description: description,
+            like: true,
+            dataFetch: data
+          });
+        }}
+      >
+        <View style={{flexDirection:"row"}}>
       <Image source={image} style={{ width: 100, height: 100, marginRight: 20 }} resizeMode="contain" />
       <View style={{flexDirection:"column", justifyContent:"center"}}>
       <Text variant="titleLarge" style={{marginBottom:10, marginLeft: 5}}>{name}</Text>
       <Chip style={{width: 120, backgroundColor:"#fbcfcd"}}>Price: {price}</Chip>
       </View>
-      </View>
+      </View>   
+      </Pressable>
+
       <TouchableOpacity onPress={() => removeItem(id)}>
         <View style={{ flexDirection: "row", alignItems: "center" }}>
           <Ionicons style={menuStyles.icon} name="ios-heart-sharp" size={24} color="red" />
@@ -42,7 +60,7 @@ const Item = ({ name, price, image, id, data, setDataFetch, navigation}) => {
   );
 };
 
-const FavouriteList = () => {
+const FavouriteList = ({navigation}) => {
   const [dataFetch,setDataFetch] = useState([])
   const isFocused = useIsFocused();
   useEffect(() => {
@@ -87,7 +105,10 @@ const FavouriteList = () => {
       price={item.price}
       image={item.image}
       id={item.id}
+      category={item.category}
+      description={item.description}
       data={dataFetch}
+      navigation={navigation}
       setDataFetch={setDataFetch}
     />
   );
@@ -106,7 +127,8 @@ const FavouriteList = () => {
       </View>
     );
   } else {
-    return <Text>Empty list</Text>;
+    return <Text style={{textAlign:"center", marginTop:"40%"}}><AntDesign name="frowno" size={24} color="black" />
+    Empty List</Text>;
   }
 };
 
