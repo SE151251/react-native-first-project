@@ -1,18 +1,17 @@
 import React, { useEffect, useState } from "react";
 import {
   View,
-  Text,
   StyleSheet,
   FlatList,
   Image,
   TouchableOpacity,
-  Button,
-  Alert
+  Alert,
 } from "react-native";
+import { Button, Chip, Text } from 'react-native-paper';
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useIsFocused } from "@react-navigation/native";
-const Item = ({ name, price, image, id, data, setDataFetch }) => {
+const Item = ({ name, price, image, id, data, setDataFetch, navigation}) => {
   const removeItem = async (id) => {
     try {
       const newList = data.filter((i) => i.id !== id);
@@ -24,16 +23,22 @@ const Item = ({ name, price, image, id, data, setDataFetch }) => {
     }
   };
   return (
+    <>
     <View style={menuStyles.innerContainer}>
-      <Image source={{ uri: image }} style={{ width: 100, height: 100 }} />
-      <Text style={menuStyles.itemText}>{name}</Text>
-      <Text style={menuStyles.itemText}>{price}</Text>
+      <View style={{flexDirection:"row"}}>
+      <Image source={image} style={{ width: 100, height: 100, marginRight: 20 }} resizeMode="contain" />
+      <View style={{flexDirection:"column", justifyContent:"center"}}>
+      <Text variant="titleLarge" style={{marginBottom:10, marginLeft: 5}}>{name}</Text>
+      <Chip style={{width: 120, backgroundColor:"#fbcfcd"}}>Price: {price}</Chip>
+      </View>
+      </View>
       <TouchableOpacity onPress={() => removeItem(id)}>
         <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <Ionicons name="ios-heart-sharp" size={24} color="black" />
+          <Ionicons style={menuStyles.icon} name="ios-heart-sharp" size={24} color="red" />
         </View>
       </TouchableOpacity>
     </View>
+  </>
   );
 };
 
@@ -52,7 +57,7 @@ const FavouriteList = () => {
   const handleDelete = () => {
     Alert.alert(
       'Xác nhận',
-      'Bạn có chắc chắn muốn xóa?',
+      'Xóa hết thiệt hả?',
       [
         { text: 'Hủy', style: 'cancel' },
         { text: 'Xóa', onPress: clearData, style: 'destructive' }
@@ -89,13 +94,15 @@ const FavouriteList = () => {
   console.log(dataFetch);
   if (dataFetch) {
     return (
-      <View style={menuStyles.container}>
-        <Button onPress={handleDelete} title="Clear"></Button>
+    <View style={menuStyles.container}>
+    <Text variant="headlineMedium" style={{textAlign:"center", color:"#03C8DF", marginTop:10}}>╰❥Your Favorite List︵✰</Text> 
         <FlatList
+         style={{flex: .935}}
           data={dataFetch}
           keyExtractor={(item) => item.id}
           renderItem={renderItem}
         ></FlatList>
+         <Button  mode="contained-tonal" style={{flex: .065, borderRadius:0}} buttonColor="#FA6B6B" onPress={handleDelete} icon="trash-can-outline">Clear All</Button>
       </View>
     );
   } else {
@@ -107,17 +114,40 @@ const FavouriteList = () => {
 const menuStyles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor:"#FFF"
   },
   innerContainer: {
-    paddingHorizontal: 40,
-    paddingVertical: 20,
+    borderWidth: 1,
+    paddingHorizontal: 10,
+    paddingVertical: 10,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    margin: 10,
+    borderRadius: 15
+  },
+  item: {
     flexDirection: "row",
     justifyContent: "space-between",
   },
-  itemText: {
-    color: "#F4CE14",
+  itemDescription:{
+   marginLeft: 10
+  },
+  itemName: {
+    color: "black",
     fontSize: 20,
   },
+  itemPrice: {
+    color: "black",
+    fontSize: 20,
+    marginTop:40
+  },
+  icon:{
+    paddingTop:40
+  },
+  deleteButton: {
+    position:"relative",
+    bottom: 0
+  }
 });
 
 export default FavouriteList;

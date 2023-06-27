@@ -3,15 +3,18 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { useEffect } from "react";
+import {Card, Chip, Text } from 'react-native-paper';
 import {
+  StyleSheet,
   Image,
-  Text,
+  // Text,
+  ScrollView,
   TouchableOpacity,
   View
 } from 'react-native';
 const DetailScreen = () => {
   const route = useRoute();
-  const { name, price, image, like, id} = route.params;
+  const { name, price, image, like, id, category, description} = route.params;
   const [dataFetch, setDataFetch] = useState([]);
   const [isLike, setIsLike] = useState(dataFetch.find((i) => i.id === id) ? true : false );
   const loadData = async () => {
@@ -62,25 +65,55 @@ const DetailScreen = () => {
       setIsLike(false);
     }
   };
-  
   console.log(name, price, isLike);
   return (
-    <View>     
-      <Text>DetailScreen</Text>
-      <Image source={{ uri: image }} style={{ width: 100, height: 100 }} />
-      <Text >{name}</Text>
-      <Text >{price}</Text>
+    // <View>     
+    //   <Text>DetailScreen</Text>
+    //   <Image source={{ uri: image }} style={{ width: 100, height: 100 }} />
+    //   <Text >{name}</Text>
+    //   <Text >{price}</Text>
+    //   <TouchableOpacity onPress={() => handleFavourite()}>
+    //     <View style={{ flexDirection: "row", alignItems: "center" }}>
+    //       {isLike ? (
+    //         <Ionicons name="ios-heart-sharp" size={24} color="black" />
+    //       ) : (
+    //         <Ionicons name="ios-heart-outline" size={24} color="black" />
+    //       )}
+    //     </View>
+    //   </TouchableOpacity>
+    // </View>
+    <ScrollView>
+    <Card style={menuStyles.container} mode="outlined">
+    {/* <Card.Title title="Card Title" subtitle="Card Subtitle" left={LeftContent} /> */} 
+    <Image source={image} style={{width: 372, height: 300}} resizeMode="contain" />
+    <Card.Content>
+      <View style={{flexDirection:"row", justifyContent:"center"}}>
+      <Text variant="titleLarge" style={{textAlign:"center", marginBottom: 10}}>{name}</Text>
       <TouchableOpacity onPress={() => handleFavourite()}>
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
-          {isLike ? (
-            <Ionicons name="ios-heart-sharp" size={24} color="black" />
+        <View style={{marginTop: 2, marginLeft: 5}}>
+           {isLike ? (
+            <Ionicons name="ios-heart-sharp" size={24} color="red" />
           ) : (
-            <Ionicons name="ios-heart-outline" size={24} color="black" />
+            <Ionicons name="ios-heart-outline" size={24} color="red" />
           )}
         </View>
       </TouchableOpacity>
-    </View>
+      </View>
+      <Text variant="bodyMedium">{description}</Text>
+      <Chip style={{width: 120,  backgroundColor:"#FFFF33", marginTop:10}}>Price: {price}</Chip>
+      <Chip style={{width: 200,  backgroundColor:"#33FFFF", marginTop:10}}>Category: {category}</Chip>
+    </Card.Content>
+    <Card.Actions>
+       
+    </Card.Actions>
+  </Card>
+  </ScrollView>
   )
 }
-
+const menuStyles = StyleSheet.create({
+  container: {
+    margin: 10,
+    //paddingBottom:50
+  }
+});
 export default DetailScreen
