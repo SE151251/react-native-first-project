@@ -26,9 +26,9 @@ const Item = ({
   data,
   navigation,
 }) => {
-  const removeItem = async (id) => {
+  const removeItem = async (name) => {
     try {
-      const newList = data.filter((i) => i.id !== id);
+      const newList = data.filter((i) => i.name !== name);
       const jsonValue = JSON.stringify(newList);
       await AsyncStorage.setItem("myObject", jsonValue);
       if (newList.length === 0) {
@@ -81,7 +81,7 @@ const Item = ({
           </View>
         </Pressable>
 
-        <TouchableOpacity onPress={() => removeItem(id)}>
+        <TouchableOpacity onPress={() => removeItem(name)}>
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             <Ionicons
               style={menuStyles.icon}

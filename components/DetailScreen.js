@@ -58,7 +58,15 @@ const DetailScreen = () => {
         console.log("Remove successful");
         return;
       }    
-      dataFetch.push({name: name, price: price, image: image, category: category, description: description});
+      dataFetch.push({ name: name,
+        weight: weight,
+        rating: rating,
+        price: price,
+        image: image,
+        color: color,
+        bonus: bonus,
+        origin: origin,
+        category: category});
       console.log("add: ",dataFetch);
       const jsonValue = JSON.stringify(dataFetch);
       await AsyncStorage.setItem("myObject", jsonValue);
